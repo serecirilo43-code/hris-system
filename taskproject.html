@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Directory</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header" style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Staff Directory</h1>
+<button onclick="logout()" style="background:#ef4444; color:white; padding:8px 12px; border:none; border-radius:5px; cursor:pointer;">Logout</button>
+
+</div>
+
+
+    <!-- Add / Edit Form -->
+    <form id="staffForm" class="form-inline">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="date" id="date" required>
+        <input type="text" id="expertise" placeholder="Expertise" required>
+
+        <input type="hidden" id="editIndex">
+        <button type="submit" id="submitBtn">Add Staff</button>
+        <button type="button" id="cancelBtn" style="display:none;background:#6b7280;">Cancel</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date Started</th>
+                <th>Expertise</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="staffTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+let staff = JSON.parse(localStorage.getItem("staff")) || [];
+
+const form = document.getElementById("staffForm");
+const table = document.getElementById("staffTable");
+const submitBtn = document.getElementById("submitBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+
+function saveToStorage() {
+    localStorage.setItem("staff", JSON.stringify(staff));
+}
+
+function renderTable() {
+    table.innerHTML = "";
+
+    if (staff.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center;">No records found.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    staff.forEach((emp, index) => {
+        table.innerHTML += `
+            <tr>
+                <td><strong>${emp.name}</strong></td>
+                <td>${emp.date}</td>
+                <td><span class="badge">${emp.expertise}</span></td>
+                <td>
+                    <button onclick="editStaff(${index})" style="background:#facc15;margin-right:5px;">Edit</button>
+                    <button onclick="deleteStaff(${index})" style="background:#ef4444;">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const date = document.getElementById("date").value;
+    const expertise = document.getElementById("expertise").value;
+    const editIndex = document.getElementById("editIndex").value;
+
+    if (editIndex === "") {
+        // Add new staff
+        staff.push({ name, date, expertise });
+    } else {
+        // Update staff
+        staff[editIndex] = { name, date, expertise };
+        submitBtn.textContent = "Add Staff";
+        cancelBtn.style.display = "none";
+        document.getElementById("editIndex").value = "";
+    }
+
+    saveToStorage();
+    renderTable();
+    form.reset();
+});
+
+function editStaff(index) {
+    const emp = staff[index];
+
+    document.getElementById("name").value = emp.name;
+    document.getElementById("date").value = emp.date;
+    document.getElementById("expertise").value = emp.expertise;
+    document.getElementById("editIndex").value = index;
+
+    submitBtn.textContent = "Update Staff";
+    cancelBtn.style.display = "inline-block";
+}
+
+function deleteStaff(index) {
+    if (confirm("Are you sure you want to delete this staff?")) {
+        staff.splice(index, 1);
+        saveToStorage();
+        renderTable();
+    }
+}
+
+cancelBtn.addEventListener("click", function() {
+    form.reset();
+    document.getElementById("editIndex").value = "";
+    submitBtn.textContent = "Add Staff";
+    cancelBtn.style.display = "none";
+});
+
+renderTable();
+</script>
+
+
+<script>
+function logout() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You will be logged out!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Yes, logout",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            localStorage.removeItem("isLoggedIn");
+
+            Swal.fire({
+                title: "Logged Out!",
+                text: "You have been successfully logged out.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = "login.html";
+            });
+
+        }
+    });
+}
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Directory</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Staff Directory</h1>
+        <a href="#" id="logoutBtn" style="color:#ef4444;font-weight:bold;text-decoration:none;">Logout</a>
+    </div>
+
+    <!-- Add / Edit Form -->
+    <form id="staffForm" class="form-inline">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="date" id="date" required>
+        <input type="text" id="expertise" placeholder="Expertise" required>
+
+        <input type="hidden" id="editIndex">
+        <button type="submit" id="submitBtn">Add Staff</button>
+        <button type="button" id="cancelBtn" class="button-cancel" style="display:none;">Cancel</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date Started</th>
+                <th>Expertise</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="staffTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+let staff = JSON.parse(localStorage.getItem("employees")) || [];
+
+const form = document.getElementById("staffForm");
+const table = document.getElementById("staffTable");
+const submitBtn = document.getElementById("submitBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+function saveData() {
+    localStorage.setItem("employees", JSON.stringify(staff));
+}
+
+function renderTable() {
+    table.innerHTML = "";
+
+    if (staff.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center;">No records found.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    staff.forEach((emp, index) => {
+        table.innerHTML += `
+            <tr>
+                <td><strong>${emp.name}</strong></td>
+                <td>${emp.date}</td>
+                <td><span class="badge">${emp.expertise}</span></td>
+                <td>
+                    <button class="button-edit" onclick="editStaff(${index})">Edit</button>
+                    <button class="button-delete" onclick="deleteStaff(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const date = document.getElementById("date").value;
+    const expertise = document.getElementById("expertise").value.trim();
+    const editIndex = document.getElementById("editIndex").value;
+
+    if (editIndex === "") {
+        // Add staff
+        staff.push({ name, date, expertise });
+    } else {
+        // Update staff
+        staff[editIndex] = { name, date, expertise };
+        submitBtn.textContent = "Add Staff";
+        cancelBtn.style.display = "none";
+        document.getElementById("editIndex").value = "";
+    }
+
+    saveData();
+    renderTable();
+    form.reset();
+});
+
+function editStaff(index) {
+    const emp = staff[index];
+
+    document.getElementById("name").value = emp.name;
+    document.getElementById("date").value = emp.date;
+    document.getElementById("expertise").value = emp.expertise;
+    document.getElementById("editIndex").value = index;
+
+    submitBtn.textContent = "Update Staff";
+    cancelBtn.style.display = "inline-block";
+}
+
+function deleteStaff(index) {
+    if (confirm("Are you sure you want to delete this staff?")) {
+        staff.splice(index, 1);
+        saveData();
+        renderTable();
+    }
+}
+
+cancelBtn.addEventListener("click", function() {
+    form.reset();
+    document.getElementById("editIndex").value = "";
+    submitBtn.textContent = "Add Staff";
+    cancelBtn.style.display = "none";
+});
+
+logoutBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("employees"); // same as session_destroy()
+        staff = [];
+        renderTable();
+        alert("Logged out successfully.");
+    }
+});
+
+renderTable();
+</script>
+
+</body>
+</html>

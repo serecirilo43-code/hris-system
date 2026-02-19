@@ -1,0 +1,161 @@
+:root { 
+    --primary: #2563eb; 
+    --bg: #f3f4f6; 
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: var(--bg); 
+    margin: 0; 
+    padding: 20px;
+    display: flex; 
+    justify-content: center; 
+}
+
+.container { 
+    width: 100%; 
+    max-width: 800px; 
+}
+
+/* Header */
+.header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+/* Form */
+.form-inline { 
+    background: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.form-inline input { 
+    flex: 1; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    font-size: 14px;
+}
+
+/* Buttons */
+button { 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    transition: 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Edit & Delete Buttons */
+.button-edit {
+    background: #facc15;
+    margin-right: 5px;
+}
+
+.button-delete {
+    background: #ef4444;
+}
+
+/* Table */
+table { 
+    width: 100%; 
+    background: white; 
+    border-collapse: collapse; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+th, td { 
+    padding: 15px; 
+    text-align: left; 
+    border-bottom: 1px solid #eee; 
+}
+
+th { 
+    background: #e5e7eb; 
+    font-weight: 600;
+}
+
+/* Badge */
+.badge { 
+    background: #dbeafe; 
+    color: #1e40af; 
+    padding: 4px 10px; 
+    border-radius: 12px; 
+    font-size: 0.8em; 
+}
+
+/* Empty state */
+td[colspan="4"] {
+    text-align: center;
+    color: #888;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .form-inline {
+        flex-direction: column;
+    }
+
+    .form-inline input,
+    .form-inline button {
+        width: 100%;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    td {
+        border: none;
+        padding: 8px 0;
+    }
+
+    td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 3px;
+        color: #555;
+    }
+}
